@@ -2,8 +2,11 @@ var mouseXC
 var mouseYC
 
 var p=[]
+var b
 
-  function setup() {
+//Teste Pertinencia Ponto 
+
+  /* function setup() {
     createCanvas(400, 400);
     p= [createVector(random(0,width)-(width/2),random(0,height)-(height/2)),
         createVector(random(0,width)-(width/2),random(0,height)-(height/2)),
@@ -11,29 +14,75 @@ var p=[]
         createVector(random(0,width)-(width/2),random(0,height)-(height/2)),
     ]
 
+    b = new AABB(p)
+
   }
 
 function draw() {
   goCartesian()
   background(220);
 
-  p= [createVector(random(0,width)-(width/2),random(0,height)-(height/2)),
-        createVector(random(0,width)-(width/2),random(0,height)-(height/2)),
-        createVector(random(0,width)-(width/2),random(0,height)-(height/2)),
-        createVector(random(0,width)-(width/2),random(0,height)-(height/2)),
-    ]
-
-  frameRate(2)
   
-  let b = new AABB(p)
   b.draw()
   strokeWeight(10)
   p.forEach(pt =>{
 
     point(pt.x,pt.y)
   })
+
+
+  let pontoDentro = createVector(mouseXC, mouseYC);
+
+  // Verificar se o ponto está dentro da AABB
+  if (b.isInside(pontoDentro)) {
+    fill(0, 255, 0); // Preencher de verde se o ponto estiver dentro
+  } else {
+    fill(255, 0, 0); // Preencher de vermelho se o ponto estiver fora
+  }
+
+  // Desenhar o ponto
+  ellipse(pontoDentro.x, pontoDentro.y, 10, 10);
+} */
+
+
+// Teste Colisão de AABB
+/* let aabb1, aabb2;
+
+function setup() {
+  createCanvas(400, 400);
+
+  // Criar duas AABBs com base em nuvens de pontos
+  let nuvem_pontos1 = [
+    createVector(100, 100),
+    createVector(120, 120)
+  ];
+  aabb1 = new AABB(nuvem_pontos1);
+
+  let nuvem_pontos2 = [
+    createVector(150, 150),
+    createVector(250, 250)
+  ];
+  aabb2 = new AABB(nuvem_pontos2);
 }
 
+function draw() {
+  background(220);
+
+  // Desenhar as AABBs
+  aabb1.draw();
+  aabb2.draw();
+
+  // Verificar colisão
+  if (aabb1.collidesAABB(aabb2)) {
+    fill(255, 0, 0); // Preencher de vermelho se houver colisão
+  } else {
+    fill(0, 255, 0); // Preencher de verde se não houver colisão
+  }
+
+  // Desenhar um ponto entre as AABBs
+  ellipse(mouseX, mouseY, 10, 10);
+}
+ */
 
 class AABB{
 
@@ -56,21 +105,14 @@ class AABB{
 
       nuvem_pontos.forEach( ponto => {
           
-        if (maxX< ponto.x){
-          maxX =ponto.x
-        }
-
-        if (maxY< ponto.y){
-          maxY =ponto.y
-        }
-
-        if (minX> ponto.x){
-          minX =ponto.x
-        }
-
-        if (minY> ponto.y){
-          minY =ponto.y
-        }
+        // Atualiza maxX se ponto.x é maior
+        maxX = Math.max(maxX, ponto.x);
+        // Atualiza maxY se ponto.y é maior
+        maxY = Math.max(maxY, ponto.y);
+        // Atualiza minX se ponto.x é menor
+        minX = Math.min(minX, ponto.x);
+        // Atualiza minY se ponto.y é menor
+        minY = Math.min(minY, ponto.y);
 
       
         this.max= createVector(maxX,maxY)
@@ -92,6 +134,30 @@ class AABB{
 
   getMin(){
       return this.min
+  }
+
+  isInside(point) {
+    return (
+      point.x >= this.min.x &&
+      point.x <= this.max.x &&
+      point.y >= this.min.y &&
+      point.y <= this.max.y
+    );
+  }
+
+  collidesAABB(bondary){
+    
+
+    if (!(bondary instanceof AABB)){
+      console.log("Não é uma AABB")
+    }
+
+    let overlapX = this.max.x > bondary.min.x && this.min.x < bondary.max.x;
+
+    let overlapY = this.max.y > bondary.min.y && this.min.y < bondary.max.y;
+
+    return overlapX && overlapY
+
   }
 }
 
