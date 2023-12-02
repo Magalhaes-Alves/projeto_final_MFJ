@@ -84,6 +84,178 @@ function draw() {
 }
  */
 
+/* let conjuntoPontos = [];
+let cir
+
+function setup() {
+  createCanvas(400, 400);
+  // Gere aleatoriamente uma nuvem de pontos
+  conjuntoPontos = generateRandomPoint(10)
+  cir = new Circle(conjuntoPontos);
+
+  
+  // Crie uma instância da classe Circle com a nuvem de pontos
+  
+}
+
+function draw() {
+    background(220);
+    goCartesian()
+    cir.draw()
+  
+  // Exiba o raio e o centro do círculo na console
+  console.log("Centro:", cir.center); 
+  // Desenhe os pontos
+    conjuntoPontos.forEach(ponto => {
+    fill(0,0,255)
+    ellipse(ponto.x, ponto.y, 8, 8);
+  })
+
+
+
+  if (cir) {
+
+    // Teste se alguns pontos estão dentro da esfera
+    let testPoint1 = createVector(mouseXC, mouseYC);
+    let testPoint2 = createVector(0, 0);
+
+    if (cir.isInside(testPoint1)) {
+      fill(255, 255, 0); // Cor vermelha
+    } else {
+      fill(0, 255, 0); // Cor verde
+    }
+    ellipse(testPoint1.x, testPoint1.y, 12, 12);
+
+    if (cir.isInside(testPoint2)) {
+      fill(255, 255, 0); // Cor vermelha
+    } else {
+      fill(0, 255, 255); // Cor verde
+    }
+    ellipse(testPoint2.x, testPoint2.y, 12, 12);
+  }
+} */
+
+let conjuntoPontos1 = [];
+let boundingSphere1
+
+let conjuntoPontos2 = [];
+let boundingSphere2;
+
+function setup() {
+  createCanvas(400, 400);
+
+  // Gere aleatoriamente duas nuvens de pontos
+  
+  conjuntoPontos1 = generateRandomPoint(2)
+  conjuntoPontos2 =generateRandomPoint(2)
+  
+
+  // Crie duas instâncias da classe BoundingSphere com as nuvens de pontos
+  boundingSphere1 = new Circle(conjuntoPontos1);
+  boundingSphere2 = new Circle(conjuntoPontos2);
+}
+
+function draw() {
+  background(220);
+  goCartesian()
+
+  // Desenhe os pontos e as esferas envolventes
+  boundingSphere1.draw(color(255,120,80))
+  boundingSphere2.draw(color(50,200,130))  
+
+
+  // Verifique a colisão entre as duas esferas
+  if (boundingSphere1.collidesSphere(boundingSphere2)) {
+    fill(255, 0, 0); // Cor vermelha se houver colisão
+  } else {
+    noFill();
+  }
+
+  // Desenhe as esferas
+  ellipse(boundingSphere1.center.x, boundingSphere1.center.y, boundingSphere1.r * 2, boundingSphere1.r * 2);
+  ellipse(boundingSphere2.center.x, boundingSphere2.center.y, boundingSphere2.r * 2, boundingSphere2.r * 2);
+}
+
+
+class Circle{
+
+  constructor(nuvem_pontos){
+
+
+    if (nuvem_pontos.length == 0 || nuvem_pontos === undefined){
+      console.log("Conjunto de pontos vazio.")
+      return
+    }
+
+    this.r =null
+    this.center =null
+
+    let r= +Infinity
+    let best_center,center
+    
+    for (let i=0;i<500;i++){
+      
+
+      center = generateRandomPoint(1)[0]
+      console.log(center)
+      
+      let r_i= -Infinity
+      nuvem_pontos.forEach(p =>{
+        
+        r_i = max(dist(center.x,center.y,p.x,p.y),r_i )
+        
+      })
+
+      console.log(r_i)
+
+      if (r_i<r){
+        best_center = center
+        r=r_i
+      }
+
+      
+    }
+
+    this.center=best_center
+    this.r =r
+
+  }
+  draw(color = color(0,0,0)) {
+    stroke(0, 0, 0); // Cor vermelha
+    fill(color)
+    circle(this.center.x, this.center.y, this.r * 2);
+  }
+
+  isInside(point) {
+    return this.center.dist(point) <= this.r;
+  }
+
+  collidesSphere(otherSphere) {
+
+    if(!(otherSphere instanceof Circle)){
+
+      console.log("Não é uma esfera.")
+      return null
+    }
+
+    let distance = this.center.dist(otherSphere.center);
+    let sumRadii = this.r + otherSphere.r;
+
+    return distance <= sumRadii;
+  }
+}
+
+
+function generateRandomPoint(n){
+
+  let p =[]
+
+  for (i=0;i<n;i++){
+    p.push(createVector(random(0,width)-(width/2),random(0,height)-(height/2)))
+  }
+  return p
+}
+
 class AABB{
 
     
