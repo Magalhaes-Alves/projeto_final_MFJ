@@ -1,8 +1,7 @@
 var mouseXC
 var mouseYC
 
-var p=[]
-var b
+
 
 //Teste Pertinencia Ponto 
 
@@ -135,7 +134,7 @@ function draw() {
   }
 } */
 
-let conjuntoPontos1 = [];
+/* let conjuntoPontos1 = [];
 let boundingSphere1
 
 let conjuntoPontos2 = [];
@@ -174,8 +173,153 @@ function draw() {
   // Desenhe as esferas
   ellipse(boundingSphere1.center.x, boundingSphere1.center.y, boundingSphere1.r * 2, boundingSphere1.r * 2);
   ellipse(boundingSphere2.center.x, boundingSphere2.center.y, boundingSphere2.r * 2, boundingSphere2.r * 2);
+} */
+
+let conjuntoPontos = [];
+let obb;
+
+function setup() {
+  createCanvas(400, 400);
 }
 
+function draw() {
+  goCartesian()
+  background(220);
+
+  // Desenhe os pontos
+  for (let ponto of conjuntoPontos) {
+    ellipse(ponto.x, ponto.y, 8, 8);
+  }
+
+  // Desenhe a OBB se existir
+  if (obb) {
+    obb.draw();
+  }
+}
+
+function mousePressed() {
+  // Adicione um ponto à nuvem de pontos quando o mouse for pressionado
+  conjuntoPontos.push(createVector(mouseXC, mouseYC));
+}
+
+function keyPressed() {
+  // Se a tecla 'A' for pressionada, crie uma instância da classe OBB
+  if (key === 'A' || key === 'a') {
+    obb = new OBB(conjuntoPontos);
+  }
+}
+
+
+class OBB{
+
+
+  constructor(nuvem_pontos){
+    this.center =null
+    this.extends =null
+    this.u=null
+    this.v=null
+
+
+    if((nuvem_pontos.length===0)|| nuvem_pontos === undefined){
+      console.log("Conjunto de pontos vazio.");
+      return;
+    }
+
+
+    let best = {'area':Infinity}
+
+    for(let theta=0;theta<360;theta++){
+
+      let anguloRad = radians(theta)
+
+      let u = createVector(cos(anguloRad),sin(anguloRad)).normalize()
+      let v = createVector(-u.y,u.x)
+      let info =this.calcOBB(u,v,nuvem_pontos)
+
+      if (info['area']<best['area']){
+        best = info
+      }
+
+      this.u = best.u
+      this.v = best.v
+      this.center = best.center
+      this.extends = best.extends
+    }
+
+  }
+
+  calcOBB(u,v,points){
+    let min_u = Infinity;
+    let max_u = -Infinity;
+    let min_v = Infinity;
+    let max_v = -Infinity;
+
+    points.forEach(point => {
+
+      let proj_u = dot(u,point)
+      let proj_v = dot(v,point)
+      
+
+      console.log(proj_u)
+      console.log(proj_v)
+      
+      min_u= min(min_u,proj_u)
+      max_u= max(max_u,proj_u)
+      min_v= min(min_v,proj_v)
+      max_v= max(max_u,proj_v)
+
+    });
+
+
+
+    let center = add(
+      mult(u,(min_u+max_u)).mult(0.5),
+      mult(v,(min_v+max_v)).mult(0.5)
+    )
+
+    let area = (max_u-min_u)* (max_v-min_v)
+
+
+    let dict = {
+      'u':u,
+      'v':v,
+      'center':center,
+      'area':area,
+      'extends': createVector(max_u-min_u,max_v-min_v).mult(0.5)
+    }
+
+    return dict
+
+  }
+
+  draw() {
+    // Configurar o estilo da OBB
+    stroke(0, 255, 0); // Cor verde
+    noFill();
+
+    // Calcular os vértices da OBB
+    let canto1 = add(this.center, mult(this.v, this.extends.y));
+    canto1 = add(canto1, mult(this.u, this.extends.x));
+
+    let canto2 = sub(this.center, mult(this.v, this.extends.y));
+    canto2 = add(canto2, mult(this.u, this.extends.x));
+    
+    let canto3 = sub(this.center, mult(this.v, this.extends.y));
+    canto3 = sub(canto3, mult(this.u, this.extends.x));
+
+    let canto4 = add(this.center, mult(this.v, this.extends.y));
+    canto4 = sub(canto4, mult(this.u, this.extends.x));
+
+    // Desenhar a OBB
+    beginShape();
+    vertex(canto1.x, canto1.y);
+    vertex(canto2.x, canto2.y);
+    vertex(canto3.x, canto3.y);
+    vertex(canto4.x, canto4.y);
+
+    endShape(CLOSE);
+  }
+}
 
 class Circle{
 
