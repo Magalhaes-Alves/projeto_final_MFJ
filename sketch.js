@@ -266,7 +266,7 @@ class OBB{
       min_u= min(min_u,proj_u)
       max_u= max(max_u,proj_u)
       min_v= min(min_v,proj_v)
-      max_v= max(max_u,proj_v)
+      max_v= max(max_v,proj_v)
 
     });
 
