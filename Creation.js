@@ -118,8 +118,7 @@ class OBB{
         max_v= max(max_v,proj_v)
   
       });
-  
-  
+
   
       let center = add(
         mult(u,(min_u+max_u)).mult(0.5),
@@ -169,6 +168,15 @@ class OBB{
         vProjection >= -this.extends.y &&
         vProjection <= this.extends.y
       );
+    }
+
+    collides(bondary){
+
+        if(bondary instanceof AABB){
+            return bondary.collides(this)
+        }else{
+            console.log("Não é um envoltorio compatível.")
+        }
     }
   
     
@@ -241,6 +249,22 @@ class OBB{
       let sumRadii = this.r + otherSphere.r;
   
       return distance <= sumRadii;
+    }
+
+    collidesAABB(bondary){
+
+        return bondary.collides(this)
+    }
+
+    collides(bondary){
+
+        if(bondary instanceof AABB){
+            return this.collidesAABB(bondary)
+        }else if(bondary instanceof Circle){
+            return this.collidesSphere(bondary)
+        }else{
+            console.log("Não é um envoltorio compatível.")
+        }
     }
   }
   
@@ -322,7 +346,19 @@ class OBB{
       return overlapX && overlapY
   
     }
-  
+    collides(bondary){
+
+        if(bondary instanceof OBB){
+            return this.collidesAABBOBB(bondary)
+        }else if(bondary instanceof AABB){
+            return this.collides(bondary)
+        }else if(bondary instanceof Circle){
+            return this.collidesCircle(bondary)
+        }else{
+            console.log("Não é um envoltorio compatível")
+        }
+    }
+
     collidesCircle(circle) {
       if (!(circle instanceof Circle)) {
         console.log("Não é um círculo.");
