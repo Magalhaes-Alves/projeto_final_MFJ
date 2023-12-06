@@ -210,7 +210,7 @@ function keyPressed() {
 } */
 
 
-let obb;
+/* let obb;
 let testPoint;
 
 function setup() {
@@ -254,8 +254,92 @@ function generateRandomPoints() {
     points.push(createVector(random(width), random(height)));
   }
   return points;
-}
+} */
 
+/* let conjuntoPontos=[]
+let desenha =[]
+
+let obbs =[];
+
+    function setup() {
+      createCanvas(400, 400);
+      
+    }
+
+    function draw() {
+      goCartesian()
+      background(220);
+
+      // Desenhe a primeira OBB
+
+      desenha.forEach(p=>{
+        ellipse(p.x, p.y, 5, 5);
+
+      })
+
+      obbs.forEach(p=>{
+        p.draw()
+
+      })
+
+      if (obbs.length==2){
+        obbs[0].draw()
+        obbs[1].draw()
+
+      }
+
+
+      // Verifique a colisão e destaque as OBBs se houver colisão
+      if ((obbs.length==2)&&(obbs[0].checkCollision(obbs[1]))) {
+        fill(255, 0, 0, 100);
+        obbs[0].draw()
+        obbs[1].draw()
+      }
+    }
+
+    // Função para desenhar uma OBB
+    
+
+function mousePressed() {
+      // Adicione um ponto à nuvem de pontos quando o mouse for pressionado
+  conjuntoPontos.push(createVector(mouseXC, mouseYC));
+  desenha = [...conjuntoPontos]
+}
+    
+function keyPressed() {
+  // Se a tecla 'A' for pressionada, crie uma instância da classe OBB
+  if (key === 'A' || key === 'a') {
+    obbs.push(new OBB([...conjuntoPontos]))
+    conjuntoPontos =[]
+
+  }
+} */
+
+
+let aabb, c;
+
+    function setup() {
+      createCanvas(400, 400);
+      let nuvem_pontos_AABB = generateRandomPoint(4);
+      aabb = new AABB(nuvem_pontos_AABB);
+
+      let nuvem_pontos_Circle = generateRandomPoint(2);
+      c = new Circle(nuvem_pontos_Circle);
+    }
+
+    function draw() {
+      goCartesian()
+      background(220);
+
+      aabb.draw();
+      c.draw();
+
+      if (aabb.collidesCircle(c)) {
+        fill(255, 0, 0, 100);
+        aabb.draw();
+        c.draw(color(255, 0, 0));
+      }
+    }
 
 class OBB{
 
@@ -400,6 +484,56 @@ class OBB{
       vProjection <= this.extends.y
     );
   }
+
+  checkCollision(other) {
+    const axes = [this.u, this.v, other.u, other.v];
+
+    for (const axis of axes) {
+      if (!this.satAxisOverlap(axis, other)) {
+        // As OBBs não se sobrepõem neste eixo, portanto, não há colisão
+        return false;
+      }
+    }
+
+    // Se não houve separação em nenhum dos eixos, as OBBs se sobrepõem e há colisão
+    return true;
+  }
+
+  // Método para verificar a sobreposição ao longo de um eixo usando SAT
+  satAxisOverlap(axis, other) {
+    const proj1 = this.projectOntoAxis(axis);
+    const proj2 = other.projectOntoAxis(axis);
+
+    return proj1.max >= proj2.min && proj1.min <= proj2.max;
+  }
+
+  // Método para projetar a OBB atual em um eixo
+  projectOntoAxis(axis) {
+
+    let canto1 = add(this.center, mult(this.v, this.extends.y));
+    canto1 = add(canto1, mult(this.u, this.extends.x));
+
+    let canto2 = sub(this.center, mult(this.v, this.extends.y));
+    canto2 = add(canto2, mult(this.u, this.extends.x));
+    
+    let canto3 = sub(this.center, mult(this.v, this.extends.y));
+    canto3 = sub(canto3, mult(this.u, this.extends.x));
+
+    let canto4 = add(this.center, mult(this.v, this.extends.y));
+    canto4 = sub(canto4, mult(this.u, this.extends.x));
+
+    const points= [canto1,
+                  canto2,
+                  canto3,
+                  canto4]
+    
+    const projections = points.map((point) => dot(axis, point));
+
+    return {
+      min: Math.min(...projections),
+      max: Math.max(...projections),
+    };
+  }
 }
 
 class Circle{
@@ -422,7 +556,6 @@ class Circle{
       
 
       center = generateRandomPoint(1)[0]
-      console.log(center)
       
       let r_i= -Infinity
       nuvem_pontos.forEach(p =>{
@@ -431,7 +564,6 @@ class Circle{
         
       })
 
-      console.log(r_i)
 
       if (r_i<r){
         best_center = center
@@ -445,9 +577,10 @@ class Circle{
     this.r =r
 
   }
-  draw(color = color(0,0,0)) {
+  draw(fill_color = color(0,0,0)) {
     stroke(0, 0, 0); // Cor vermelha
-    fill(color)
+    fill(fill_color)
+    console.log(this.center.x, this.center.y, this.r * 2)
     circle(this.center.x, this.center.y, this.r * 2);
   }
 
@@ -555,6 +688,29 @@ class AABB{
 
     return overlapX && overlapY
 
+  }
+
+  collidesCircle(circle) {
+    if (!(circle instanceof Circle)) {
+      console.log("Não é um círculo.");
+      return false;
+    }
+
+    let closestX = this.clamp(circle.center.x, this.min.x, this.max.x);
+    let closestY = this.clamp(circle.center.y, this.min.y, this.max.y);
+
+    let distanceX = circle.center.x - closestX;
+    let distanceY = circle.center.y - closestY;
+
+    let distanceSquared = distanceX * distanceX + distanceY * distanceY;
+
+    return distanceSquared < circle.r * circle.r;
+  }
+
+
+// Função de utilidade para restringir um valor a um intervalo
+  clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
   }
 }
 
