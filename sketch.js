@@ -175,7 +175,7 @@ function draw() {
   ellipse(boundingSphere2.center.x, boundingSphere2.center.y, boundingSphere2.r * 2, boundingSphere2.r * 2);
 } */
 
-let conjuntoPontos = [];
+/* let conjuntoPontos = [];
 let obb;
 
 function setup() {
@@ -207,6 +207,53 @@ function keyPressed() {
   if (key === 'A' || key === 'a') {
     obb = new OBB(conjuntoPontos);
   }
+} */
+
+
+let obb;
+let testPoint;
+
+function setup() {
+  createCanvas(400, 400);
+
+  // Crie uma OBB com uma nuvem de pontos aleatórios
+  const points = generateRandomPoints();
+  obb = new OBB(points);
+
+  // Crie um ponto aleatório para teste
+  testPoint = createVector(random(width), random(height));
+
+  noLoop();
+}
+
+function draw() {
+  background(255);
+
+  // Desenhe a OBB
+  obb.draw();
+
+  // Desenhe o ponto de teste
+  fill(0);
+  ellipse(testPoint.x, testPoint.y, 18, 18);
+
+  // Verifique se o ponto de teste está dentro da OBB
+  if (obb.isInside(testPoint)) {
+    fill(255, 0, 0); // Ponto dentro da OBB, cor vermelha
+  } else {
+    fill(0, 255, 0); // Ponto fora da OBB, cor verde
+  }
+
+  // Desenhe um retângulo para indicar se o ponto está dentro ou fora
+  rect(10, 10, 50, 50);
+}
+
+// Função auxiliar para gerar uma nuvem de pontos aleatórios
+function generateRandomPoints() {
+  const points = [];
+  for (let i = 0; i < 4; i++) {
+    points.push(createVector(random(width), random(height)));
+  }
+  return points;
 }
 
 
@@ -281,11 +328,7 @@ class OBB{
 
       let proj_u = dot(u,point)
       let proj_v = dot(v,point)
-      
-
-      console.log(proj_u)
-      console.log(proj_v)
-      
+            
       min_u= min(min_u,proj_u)
       max_u= max(max_u,proj_u)
       min_v= min(min_v,proj_v)
@@ -340,6 +383,22 @@ class OBB{
     }
 
     endShape(CLOSE);
+  }
+
+  isInside(point) {
+    const toPoint = sub(point, this.center);
+
+    // Projetar o vetor até o ponto nos eixos principais da OBB
+    const uProjection = dot(this.u, toPoint);
+    const vProjection = dot(this.v, toPoint);
+
+    // Verificar se as projeções estão dentro das dimensões da OBB
+    return (
+      uProjection >= -this.extends.x &&
+      uProjection <= this.extends.x &&
+      vProjection >= -this.extends.y &&
+      vProjection <= this.extends.y
+    );
   }
 }
 
