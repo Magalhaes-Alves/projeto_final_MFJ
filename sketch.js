@@ -218,6 +218,7 @@ class OBB{
     this.extends =null
     this.u=null
     this.v=null
+    this.vertex
 
 
     if((nuvem_pontos.length===0)|| nuvem_pontos === undefined){
@@ -244,7 +245,29 @@ class OBB{
       this.v = best.v
       this.center = best.center
       this.extends = best.extends
+
+      this.updateVertex()  
     }
+
+  }
+
+  updateVertex(){
+    let canto1 = add(this.center, mult(this.v, this.extends.y));
+    canto1 = add(canto1, mult(this.u, this.extends.x));
+
+    let canto2 = sub(this.center, mult(this.v, this.extends.y));
+    canto2 = add(canto2, mult(this.u, this.extends.x));
+    
+    let canto3 = sub(this.center, mult(this.v, this.extends.y));
+    canto3 = sub(canto3, mult(this.u, this.extends.x));
+
+    let canto4 = add(this.center, mult(this.v, this.extends.y));
+    canto4 = sub(canto4, mult(this.u, this.extends.x));
+
+    this.vertex= [canto1,
+                  canto2,
+                  canto3,
+                  canto4]
 
   }
 
@@ -312,10 +335,9 @@ class OBB{
 
     // Desenhar a OBB
     beginShape();
-    vertex(canto1.x, canto1.y);
-    vertex(canto2.x, canto2.y);
-    vertex(canto3.x, canto3.y);
-    vertex(canto4.x, canto4.y);
+    for(let i=0;i<4;i++){
+      vertex(this.vertex[i].x, this.vertex[i].y);      
+    }
 
     endShape(CLOSE);
   }
