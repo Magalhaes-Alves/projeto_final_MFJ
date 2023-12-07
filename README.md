@@ -1,4 +1,5 @@
 # Matemática e Física para Jogos - Projeto Final: Volumes e Colisões 
+## Sérgio Garcia Barbosa Filho - 493746 e 
 
 ## Arquivos e partes deste trabalho:
 
