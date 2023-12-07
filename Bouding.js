@@ -1,70 +1,41 @@
-let aabb1, aabb2;
-let circle1, circle2;
-let obb, obbAABB;
+let nuvemPontos = [];
+let envoltorio = null;
 
 function setup() {
-  createCanvas(400, 400);
-  
-  // Criar instâncias das classes
-  aabb1 = new AABB(generateRandomPoint(5));
-  aabb2 = new AABB(generateRandomPoint(5));
-  
-  circle1 = new Circle(generateRandomPoint(2));
-  circle2 = new Circle(generateRandomPoint(2));
-  
-  obbAABB = new OBB(generateRandomPoint(5));
+  createCanvas(600, 400);
 }
 
 function draw() {
-  goCartesian()
-  background(220);
-
-  // Desenhar as instâncias
-  stroke(0,255,0) //verde
-  aabb1.draw();
-  stroke(255,255,0) 
-  aabb2.draw();
+  background(255);
   
-  stroke(0, 0, 255) //Azul
-  circle1.draw();
-  stroke(60, 120, 100) 
-
-  circle2.draw();
-  
-  stroke(30, 140, 50)
-  obbAABB.draw(color(0, 255, 0));
-
-  // Verificar colisões
-  if (aabb1.collidesAABB(aabb2)) {
-    console.log('AABB colidiu com AABB');
-    stroke(255,0,0) //verde
-    aabb1.draw();
-    stroke(255,0,0) //vermelho
-    aabb2.draw();
+  // Desenha a nuvem de pontos
+  for (let ponto of nuvemPontos) {
+    ellipse(ponto.x, ponto.y, 5, 5);
   }
 
-  if (aabb1.collidesCircle(circle1)) {
-    console.log('AABB colidiu com Circle 1');
-    stroke(255,0,0) 
-    aabb1.draw()
-    stroke(255, 0, 0) 
-    circle1.draw();
+  // Desenha o envoltório (Bounding Box)
+  if (envoltorio) {
+    noFill()
+    envoltorio.draw();
   }
+}
 
-  if (aabb1.collidesAABBOBB(obbAABB)) {
-    console.log('AABB colidiu com OBB');
-    stroke(255,0,0) 
-    aabb1.draw();
-    stroke(255, 0, 0)
-    obbAABB.draw();
-  }
+function mousePressed() {
+  // Adiciona um ponto na nuvem ao clicar
+  nuvemPontos.push(createVector(mouseX, mouseY));
+}
 
-  if (circle1.collidesSphere(circle2)) {
-    console.log('Circle 1 colidiu com Circle 2');
-    stroke(255,0,0) 
-    circle1.draw();
-    stroke(255, 0, 0)
-    circle2.draw();
+function keyPressed() {
+  // Verifica qual tecla foi pressionada
+  if (key === '1') {
+    // Pressionou a tecla '1': Cria uma Bounding Box Alinhada aos Eixos (AABB)
+    envoltorio = new AABB(nuvemPontos);
+  } else if (key === '2') {
+    // Pressionou a tecla '2': Cria uma Bounding Box Orientada (OBB)
+    envoltorio = new OBB(nuvemPontos);
+  } else if (key === '3') {
+    // Pressionou a tecla '3': Cria um Círculo
+    envoltorio = new Circle(nuvemPontos);
   }
 }
 
@@ -253,6 +224,7 @@ class Circle{
 
   }
   draw(fill_color =null) {
+    stroke(0, 0, 0); // Cor vermelha
     if (fill_color==null){
       noFill()
     }else{
