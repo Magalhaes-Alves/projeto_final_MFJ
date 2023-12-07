@@ -20,4 +20,7 @@ Esta parte do projeto tem por objetivo demonstrar se um ponto está ou não cont
 De ínicio, é gerado uma série de pontos aleatórios dentro da área do canvas (fizemos uma delimitação para que os valores estivessem contidos sempre pela região central do canvas, isso apenas para melhorar a visualização).
 Após isso, o usuário pode pressionar uma das teclas acima para criar um volume envoltório. Com isso, um ponto que segue o cursor do mouse é gerado. Este ponto fica vermelho quando o ponto do cursor está fora do envoltório, e verde quando está dentro.
 
-### Parte 3:
+### Parte 3: Colisão entre volumes
+Arquivo: Colision.js
+
+Esta parte serve para mostrar a colisão entre dois volumes.
