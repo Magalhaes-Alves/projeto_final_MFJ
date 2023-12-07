@@ -1,39 +1,44 @@
-let nuvemPontos = generateRandomPoint(10);
+let nuvemPontos = []; //Pontos para construir os envoltórios
+let pontoMouse;
 let envoltorio = null;
 
 function setup() {
-  createCanvas(600, 400);
-  let pontoMouse = createVector(mouseX, mouseY);
+  createCanvas(800, 800);
+  pontoMouse = createVector(mouseX, mouseY);
+  nuvemPontos = generateRandomPoint(10);
 }
 
 function draw() {
   background(255);
-  
+
+  pontoMouse.set(mouseX, mouseY);
+
   // Desenha a nuvem de pontos
   for (let ponto of nuvemPontos) {
+    fill(0)
     ellipse(ponto.x, ponto.y, 5, 5);
   }
 
-  //Desenha ponto do mouse:
-  ellipse(pontoMouse.x, pontoMouse.y, 10, 10);
-
-  // Desenha o envoltório (Bounding Box)
+  // Desenha o ponto do mouse
   if (envoltorio) {
-    noFill()
+    noFill();
     envoltorio.draw();
-  }
 
-  // Verifica se o ponto do mouse está dentro da AABB
-  if (envoltorio.isInside(pontoMouse)) {
-    fill(0, 255, 0); // Preenche de verde se estiver dentro
-    ellipse(pontoMouse.x, pontoMouse.y, 10, 10);
+    // Verifica se o ponto do mouse está dentro do envoltório
+    if (envoltorio.isInside(pontoMouse)) {
+      fill(0, 255, 0); // Preenche de verde se estiver dentro
+    } else {
+      fill(255, 0, 0); // Preenche de vermelho se estiver fora
     }
+    ellipse(pontoMouse.x, pontoMouse.y, 10, 10);
+  }
 }
 
+/**
 function mousePressed() {
   // Adiciona um ponto na nuvem ao clicar
   nuvemPontos.push(createVector(mouseX, mouseY));
-}
+}**/
 
 function keyPressed() {
   // Verifica qual tecla foi pressionada
@@ -428,13 +433,13 @@ class AABB{
   
   
   
-//Função para gerar pontos aleatórios. Os pontos gerados obedecem os limites do canvas.
+//Função para gerar pontos aleatórios. Os pontos gerados estarão em coordenadas (x, y), em que x e y estão no intervalo [200,599]
 function generateRandomPoint(n){
 
   let p =[]
 
   for (i=0;i<n;i++){
-    p.push(createVector(random(0,width)-(width/2),random(0,height)-(height/2)))
+    p.push(createVector(random(200,600),random(200,600)))
   }
   return p
 }
