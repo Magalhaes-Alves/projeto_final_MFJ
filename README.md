@@ -27,3 +27,12 @@ Após isso, o usuário pode pressionar uma das teclas acima para criar um volume
 Arquivo: Colision.js
 
 Esta parte serve para mostrar a colisão entre dois volumes.
+4 casos de colisão foram implementados:
+- Tecla [1] - AABB x AABB
+- Tecla [2] - AABB x Circulo
+- Tecla [3] - AABB x OBB
+- Tecla [4] - Circulo x Circulo
+
+Os envoltórios são gerados randomicamente a cada vez que se pressiona uma tecla correspondente. Em caso de colisão, os envoltórios ficarão vermelhos (bordas) e verdes quando não houver colisão.
+
+OBS: no caso AABB x OBB, existe um pequeno bug não identificado que, as vezes, não detecta a colisão. Em nossos testes, foi em um caso muito específico. Por facor, considerar o máximo possível.
