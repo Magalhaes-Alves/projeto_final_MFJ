@@ -1,70 +1,55 @@
-let aabb1, aabb2;
-let circle1, circle2;
-let obb, obbAABB;
+let objeto1, objeto2;
 
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(600, 600);
   
-  // Criar instâncias das classes
-  aabb1 = new AABB(generateRandomPoint(5));
-  aabb2 = new AABB(generateRandomPoint(5));
-  
-  circle1 = new Circle(generateRandomPoint(2));
-  circle2 = new Circle(generateRandomPoint(2));
-  
-  obbAABB = new OBB(generateRandomPoint(5));
+  objeto1 = new AABB(generateRandomPoint(5));
+  objeto2 = new AABB(generateRandomPoint(5));
 }
 
 function draw() {
   goCartesian()
   background(220);
-
-  // Desenhar as instâncias
-  stroke(0,255,0) //verde
-  aabb1.draw();
-  stroke(255,255,0) 
-  aabb2.draw();
   
-  stroke(0, 0, 255) //Azul
-  circle1.draw();
-  stroke(60, 120, 100) 
-
-  circle2.draw();
+  //Desenhar as instâncias:
+  stroke(0,255,0, 128)
+  fill(0,255,0, 50)
+  objeto1.draw();
+  objeto2.draw();
   
-  stroke(30, 140, 50)
-  obbAABB.draw(color(0, 255, 0));
-
-  // Verificar colisões
-  if (aabb1.collidesAABB(aabb2)) {
-    console.log('AABB colidiu com AABB');
-    stroke(255,0,0) //verde
-    aabb1.draw();
-    stroke(255,0,0) //vermelho
-    aabb2.draw();
-  }
-
-  if (aabb1.collidesCircle(circle1)) {
-    console.log('AABB colidiu com Circle 1');
-    stroke(255,0,0) 
-    aabb1.draw()
-    stroke(255, 0, 0) 
-    circle1.draw();
-  }
-
-  if (aabb1.collidesAABBOBB(obbAABB)) {
-    console.log('AABB colidiu com OBB');
-    stroke(255,0,0) 
-    aabb1.draw();
-    stroke(255, 0, 0)
-    obbAABB.draw();
-  }
-
-  if (circle1.collidesSphere(circle2)) {
-    console.log('Circle 1 colidiu com Circle 2');
-    stroke(255,0,0) 
-    circle1.draw();
-    stroke(255, 0, 0)
-    circle2.draw();
+  //Verificar colisões:
+  
+  if (objeto1 instanceof AABB) { //Objeto1 é uma AABB
+    if (objeto2 instanceof AABB){
+      if (objeto1.collidesAABB(objeto2)){ //AABB x AABB
+        stroke(255,0,0)
+        fill(255,0,0, 128)
+        objeto1.draw();
+        objeto2.draw();
+      }
+    } else if (objeto2 instanceof Circle){ //AABB x Circle
+      if (objeto1.collidesCircle(objeto2)){
+        stroke(255,0,0)
+        fill(255,0,0, 128)
+        objeto1.draw();
+        objeto2.draw();
+      }
+      
+    } else if (objeto2 instanceof OBB){ //AABB x OBB
+      if (objeto1.collidesAABBOBB(objeto2)){
+        stroke(255,0,0)
+        fill(255,0,0, 128)
+        objeto1.draw();
+        objeto2.draw();
+      }
+    }
+  } else if (objeto1 instanceof Circle) {
+    if (objeto1.collidesSphere(objeto2)){
+        stroke(255,0,0)
+        fill(255,0,0, 128)
+        objeto1.draw();
+        objeto2.draw();
+      }
   }
 }
 
@@ -477,6 +462,30 @@ function goCartesian()
 
   translate(width/2,height/2)
   scale(1,-1,1)  
+}
+  
+function keyPressed(){
+  
+  if (key === '1') { //Gera duas AABB
+    objeto1 = new AABB(generateRandomPoint(5));
+    objeto2 = new AABB(generateRandomPoint(5));
+  }
+  
+  if (key === '2') { //Gera uma AABB e um Círculo
+    objeto1 = new AABB(generateRandomPoint(5));
+    objeto2 = new Circle(generateRandomPoint(5));
+  }
+  
+  if (key === '3') { //Gera uma AABB e uma OBB
+    objeto1 = new AABB(generateRandomPoint(5));
+    objeto2 = new OBB(generateRandomPoint(5));
+  }
+  
+  if (key === '4') { //Gera dois circulos
+    objeto1 = new Circle(generateRandomPoint(5));
+    objeto2 = new Circle(generateRandomPoint(5));
+  }
+  
 }
 
 function grabMouse()
